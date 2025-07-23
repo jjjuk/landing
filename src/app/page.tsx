@@ -2,7 +2,30 @@
 import { GitHubLogoIcon, DiscordLogoIcon } from '@radix-ui/react-icons'
 import { Avatar, Button, ThemeToggle } from '../ui'
 import { BackgroundEffect } from '../ui/BackgroundEffect'
+import confetti from 'canvas-confetti'
 // import { Separator } from '@radix-ui/react-separator'
+
+const DS_CONFETTI_SCALING = 3
+
+const createParticle = (text: string) =>
+  confetti.shapeFromText({
+    text,
+    scalar: DS_CONFETTI_SCALING,
+  })
+
+const handleDiscordClick = async () => {
+  await confetti({
+    scalar: DS_CONFETTI_SCALING,
+    particleCount: 120,
+    spread: 120,
+    shapes: [createParticle('🪲'), createParticle('🐞'), createParticle('❤️')],
+    origin: {
+      y: 0.65,
+    },
+  })
+
+  window.open(`https://discord.gg/cpy6P5YNh2`, '_blank')
+}
 
 export default function Home() {
   return (
@@ -62,14 +85,14 @@ export default function Home() {
             <br />
             Share knowledge, collaborate, and grow together!
           </p>
-          <div className="flex gap-4 mt-2">
-            <Button asChild variant="discord">
-              <a
-                href="https://discord.gg/cpy6P5YNh2"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="gap-2"
-              >
+          <div className="flex relative gap-4 mt-2">
+            <Button
+              asChild
+              variant="discord"
+              onClick={handleDiscordClick}
+              className="z-20"
+            >
+              <a rel="noopener noreferrer" className="gap-2">
                 <DiscordLogoIcon className="w-5 h-5" />
                 Join SoyDev
               </a>
