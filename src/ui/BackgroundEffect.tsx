@@ -43,6 +43,9 @@ const PHYSICS_CONFIG = {
   // Wave weight and momentum
   WAVE_MASS: 0.85, // Heavier waves feel more realistic
   MOMENTUM_TRANSFER: 0.25, // How much mouse movement transfers to waves
+
+  // Wave ripple intensity
+  RIPPLE_FACTOR: 0.13, // Controls wave ripple intensity
 }
 
 // Calming morphing waves background effect with realistic physics
@@ -191,9 +194,9 @@ export function BackgroundEffect() {
 
     // Wave parameters
     const waveCount = palette.length
-    const baseAmplitude = () => (isDark ? 35 : 42)
-    const baseSpeed = () => (isDark ? 0.3 : 0.22)
-    const baseYOffset = () => (isDark ? 0.2 : 0.25)
+    const baseAmplitude = 42
+    const baseSpeed = 0.22
+    const baseYOffset = 0.2
 
     function drawWave(
       color: string,
@@ -209,27 +212,30 @@ export function BackgroundEffect() {
       ctx.beginPath()
 
       // Calculate wave properties with physics-based modifications
-      const baseAmp = baseAmplitude()
       const amplitude =
-        baseAmp +
+        baseAmplitude +
         i * 18 +
         Math.sin(t / 2.5 + i) * 10 +
         Math.abs(stretchFactor) * (30 - i * 2) // Reduced Y-stretch effect for gentleness
 
       const waveSpeed = wavePhaseSpeed + i * 0.08
       const yOffset =
-        height * (baseYOffset() + i * 0.12) +
+        height * (baseYOffset + i * 0.12) +
         Math.sin(t / 3 + i) * 12 +
         stretchFactor * (20 - i * 1) // Reduced Y-stretch effect for gentleness
 
       // Mouse Y influence for additional stretch (reduced for gentleness)
       const mouseYInfluence = (mouse.current.y - 0.5) * 30 * (1 + i * 0.1)
 
-      // Diagonal slope for natural wave flow
-      const slope = (0.4 * height) / width
+      // Fixed diagonal slope for consistent wave flow across all aspect ratios
+      const referenceWidth = 1920 * dpr // 16:9 reference width
+      const referenceHeight = 1080 * dpr // 16:9 reference height
+      const slope = (0.4 * referenceHeight) / referenceWidth // Fixed slope based on 16:9
 
-      const points = 24 // Slightly more points for smoother curves
-      const step = width / points
+      // Fixed wave segment length instead of viewport-dependent
+      const fixedSegmentWidth = 80 // Fixed pixel width per segment
+      const points = Math.ceil(width / fixedSegmentWidth) // Calculate points based on fixed segment size
+      const step = fixedSegmentWidth // Use fixed step size
 
       for (let j = 0; j <= points; j++) {
         const x = j * step
@@ -239,14 +245,24 @@ export function BackgroundEffect() {
         const phase =
           t * waveSpeed -
           i * 1.5 +
-          px * 5 +
+          (x / fixedSegmentWidth) * PHYSICS_CONFIG.RIPPLE_FACTOR + // Configurable ripple intensity
           Math.sin(t / 4 + i * 2.2) * 0.8 +
           xOffset * (1 + i * 0.1) // Apply X-offset with slight variation per wave layer
 
         const y =
           yOffset +
-          Math.sin(phase + px * 7 + Math.cos(t / 2.8 + i)) * amplitude +
-          mouseYInfluence * Math.sin(px * Math.PI * 1.2) +
+          Math.sin(
+            phase +
+              (x / fixedSegmentWidth) * (PHYSICS_CONFIG.RIPPLE_FACTOR * 2) +
+              Math.cos(t / 2.8 + i)
+          ) *
+            amplitude +
+          mouseYInfluence *
+            Math.sin(
+              (x / fixedSegmentWidth) *
+                Math.PI *
+                (PHYSICS_CONFIG.RIPPLE_FACTOR * 0.5)
+            ) +
           px * slope * width // diagonal flow
 
         if (j === 0) {
@@ -298,9 +314,8 @@ export function BackgroundEffect() {
       waveAcceleration.current *= PHYSICS_CONFIG.WAVE_MASS // Wave mass affects acceleration decay
 
       // Return force to base speed (like a spring)
-      const baseSpeedTarget = baseSpeed()
       const returnForce =
-        (baseSpeedTarget - waveVelocity.current) * PHYSICS_CONFIG.X_RETURN_FORCE
+        (baseSpeed - waveVelocity.current) * PHYSICS_CONFIG.X_RETURN_FORCE
       waveVelocity.current += returnForce
 
       // Y-axis physics (stretching with momentum)
