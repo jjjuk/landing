@@ -1,17 +1,18 @@
 'use client'
 import React, { useRef, useEffect, useCallback } from 'react'
+import { useTheme } from '../providers/ThemeProvider'
 
 // Color palettes for waves - moved outside component
 const palettes = {
   light: [
     '#faebd7',
-    '#f5e3ce',
-    '#f3e0c7',
-    '#f7e8d6',
-    '#f1dbc0',
-    '#f8e6d2',
-    '#f6e2c9',
-    '#f2d7b8',
+    '#dec9a8',
+    '#d8c09e',
+    '#dfc4ab',
+    '#d4b896',
+    '#dbbc9f',
+    '#d1b898',
+    '#c9ae8c',
   ],
   dark: [
     '#2c2320',
@@ -46,6 +47,7 @@ const PHYSICS_CONFIG = {
 
 // Calming morphing waves background effect with realistic physics
 export function BackgroundEffect() {
+  const { theme } = useTheme()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationRef = useRef<number | null>(null)
   const mouse = useRef({ x: 0.5, y: 0.5 })
@@ -61,6 +63,14 @@ export function BackgroundEffect() {
 
   const rectRef = useRef<DOMRect | null>(null)
   const lastFrameTime = useRef(0)
+
+  // Function to determine if dark mode should be active
+  const getIsDark = useCallback(() => {
+    if (theme === 'dark') return true
+    if (theme === 'light') return false
+    // system theme
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+  }, [theme])
 
   // Move updateRect to component level so both useEffects can access it
   const updateRect = useCallback(() => {
@@ -166,13 +176,18 @@ export function BackgroundEffect() {
     resize()
     window.addEventListener('resize', resize)
 
-    let isDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    let isDark = getIsDark()
     let palette = isDark ? palettes.dark : palettes.light
+
+    // Update theme when system preference changes (only for system theme)
     const mql = window.matchMedia('(prefers-color-scheme: dark)')
-    mql.addEventListener('change', (e) => {
-      isDark = e.matches
-      palette = isDark ? palettes.dark : palettes.light
-    })
+    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+      if (theme === 'system') {
+        isDark = e.matches
+        palette = isDark ? palettes.dark : palettes.light
+      }
+    }
+    mql.addEventListener('change', handleSystemThemeChange)
 
     // Wave parameters
     const waveCount = palette.length
@@ -222,7 +237,10 @@ export function BackgroundEffect() {
 
         // Enhanced phase calculation with realistic wave physics and X-offset
         const phase =
-          t * waveSpeed - i * 1.5 + px * 5 + Math.sin(t / 4 + i * 2.2) * 0.8 + 
+          t * waveSpeed -
+          i * 1.5 +
+          px * 5 +
+          Math.sin(t / 4 + i * 2.2) * 0.8 +
           xOffset * (1 + i * 0.1) // Apply X-offset with slight variation per wave layer
 
         const y =
@@ -311,9 +329,10 @@ export function BackgroundEffect() {
 
     return () => {
       window.removeEventListener('resize', resize)
+      mql.removeEventListener('change', handleSystemThemeChange)
       if (animationRef.current) cancelAnimationFrame(animationRef.current)
     }
-  }, [updateRect])
+  }, [updateRect, theme, getIsDark])
 
   return (
     <canvas

@@ -1,6 +1,6 @@
 'use client'
 import { GitHubLogoIcon, DiscordLogoIcon } from '@radix-ui/react-icons'
-import { Avatar, Button } from '../ui'
+import { Avatar, Button, ThemeToggle } from '../ui'
 import { BackgroundEffect } from '../ui/BackgroundEffect'
 // import { Separator } from '@radix-ui/react-separator'
 
@@ -8,6 +8,11 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-between bg-transparent text-neutral-900 dark:text-neutral-100 font-sans px-4 py-10 relative overflow-hidden">
       <BackgroundEffect />
+      
+      {/* Theme Toggle - positioned in top-right corner */}
+      <div className="absolute top-6 right-6 z-10">
+        <ThemeToggle />
+      </div>
       <main className="flex flex-1 flex-col items-center justify-center w-full max-w-2xl gap-12">
         <section className="flex flex-col items-center gap-6 text-center">
           <Avatar
