@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-between bg-transparent text-neutral-900 dark:text-neutral-100 font-sans px-4 py-10 relative overflow-hidden">
       <BackgroundEffect />
-      
+
       {/* Theme Toggle - positioned in top-right corner */}
       <div className="absolute top-6 right-6 z-10">
         <ThemeToggle />
@@ -77,11 +77,9 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <footer className="w-full flex items-center justify-center py-6 text-sm text-neutral-400">
+      <footer className="w-full flex items-center justify-center py-6 text-sm text-neutral-500 dark:text-neutral-400">
         © {new Date().getFullYear()} jjjuk.org&nbsp;|&nbsp;
-        <p className="text-neutral-500">
-          disable Dark Reader for better experience
-        </p>
+        <p className="">disable Dark Reader for better experience</p>
       </footer>
     </div>
   )

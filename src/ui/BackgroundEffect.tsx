@@ -269,7 +269,7 @@ export function BackgroundEffect() {
 
       // Enhanced visual styling - removed alpha variation to prevent shade changes
       ctx.fillStyle = color
-      const baseAlpha = isDark ? 0.25 : 0.2
+      const baseAlpha = isDark ? 0.55 : 0.45
       ctx.globalAlpha = baseAlpha // Constant alpha, no variation
       ctx.fill()
       ctx.globalAlpha = 1
