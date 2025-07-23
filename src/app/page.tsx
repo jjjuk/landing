@@ -53,7 +53,7 @@ export default function Home() {
             <h2 className="text-xl font-semibold">SoyDev Community</h2>
           </div>
           <p className="text-base text-neutral-600 dark:text-neutral-300 max-w-lg text-center">
-            A vibrant community for developers and tech enthusiasts.
+            A friendly community for developers and tech enthusiasts.
             <br />
             Share knowledge, collaborate, and grow together!
           </p>
