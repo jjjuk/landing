@@ -2,7 +2,7 @@
 import { GitHubLogoIcon, DiscordLogoIcon } from '@radix-ui/react-icons'
 import { Avatar, Button } from '../ui'
 import { BackgroundEffect } from '../ui/BackgroundEffect'
-import { Separator } from '@radix-ui/react-separator'
+// import { Separator } from '@radix-ui/react-separator'
 
 export default function Home() {
   return (
