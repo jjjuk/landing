@@ -90,7 +90,7 @@ export default function Home() {
               asChild
               variant="discord"
               onClick={handleDiscordClick}
-              className="z-20"
+              className="z-20 cursor-pointer"
             >
               <a rel="noopener noreferrer" className="gap-2">
                 <DiscordLogoIcon className="w-5 h-5" />
