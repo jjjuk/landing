@@ -2,6 +2,7 @@
 import { GitHubLogoIcon, DiscordLogoIcon } from '@radix-ui/react-icons'
 import { Avatar, Button } from '../ui'
 import { BackgroundEffect } from '../ui/BackgroundEffect'
+import { Separator } from '@radix-ui/react-separator'
 
 export default function Home() {
   return (
@@ -17,7 +18,7 @@ export default function Home() {
             className="shadow-lg bg-gradient-to-tr from-indigo-500 via-sky-400 to-emerald-400"
           />
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-            jjjuk
+            @jjjuk
           </h1>
           <p className="text-lg sm:text-xl max-w-xl text-neutral-600 dark:text-neutral-300">
             Software developer & entrepreneur.
@@ -72,7 +73,10 @@ export default function Home() {
         </section>
       </main>
       <footer className="w-full flex items-center justify-center py-6 text-sm text-neutral-400">
-        © {new Date().getFullYear()} jjjuk.org
+        © {new Date().getFullYear()} jjjuk.org&nbsp;|&nbsp;
+        <p className="text-neutral-500">
+          disable Dark Reader for better experience
+        </p>
       </footer>
     </div>
   )

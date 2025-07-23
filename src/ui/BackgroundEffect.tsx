@@ -35,9 +35,9 @@ const PHYSICS_CONFIG = {
   X_SENSITIVITY: 0.3, // How responsive to mouse X movement
 
   // Y-axis stretching (amplitude modulation)
-  MAX_Y_STRETCH: 0.5, // Cap for very fast Y movements
-  Y_FRICTION: 0.92, // Stretch decay rate
-  Y_SENSITIVITY: 0.3, // How responsive to mouse Y movement
+  MAX_Y_STRETCH: 0.2, // Cap for very fast Y movements (reduced for gentleness)
+  Y_FRICTION: 0.95, // Stretch decay rate (increased for faster return to normal)
+  Y_SENSITIVITY: 0.15, // How responsive to mouse Y movement (reduced for gentleness)
 
   // Wave weight and momentum
   WAVE_MASS: 0.85, // Heavier waves feel more realistic
@@ -141,17 +141,9 @@ export function BackgroundEffect() {
     if (!canvas) return
 
     const ctx = canvas.getContext('2d')
-    const dpr = window.devicePixelRatio || 1
+    let dpr = window.devicePixelRatio || 1
     let width = window.innerWidth
     let height = window.innerHeight
-    let isVisible = true
-
-    function handleVisibilityChange() {
-      isVisible = !document.hidden
-      if (isVisible && !animationRef.current) {
-        animate()
-      }
-    }
 
     function resize() {
       if (!canvas) return
@@ -207,16 +199,16 @@ export function BackgroundEffect() {
         baseAmp +
         i * 18 +
         Math.sin(t / 2.5 + i) * 10 +
-        Math.abs(stretchFactor) * (60 - i * 3) // Y-stretch affects amplitude
+        Math.abs(stretchFactor) * (30 - i * 2) // Reduced Y-stretch effect for gentleness
 
       const waveSpeed = wavePhaseSpeed + i * 0.08
       const yOffset =
         height * (baseYOffset() + i * 0.12) +
         Math.sin(t / 3 + i) * 12 +
-        stretchFactor * (40 - i * 2) // Y-stretch affects vertical position
+        stretchFactor * (20 - i * 1) // Reduced Y-stretch effect for gentleness
 
-      // Mouse Y influence for additional stretch
-      const mouseYInfluence = (mouse.current.y - 0.5) * 60 * (1 + i * 0.15)
+      // Mouse Y influence for additional stretch (reduced for gentleness)
+      const mouseYInfluence = (mouse.current.y - 0.5) * 30 * (1 + i * 0.1)
 
       // Diagonal slope for natural wave flow
       const slope = (0.4 * height) / width
@@ -257,18 +249,17 @@ export function BackgroundEffect() {
       ctx.lineTo(0, height)
       ctx.closePath()
 
-      // Enhanced visual styling
+      // Enhanced visual styling - removed alpha variation to prevent shade changes
       ctx.fillStyle = color
       const baseAlpha = isDark ? 0.25 : 0.2
-      // const alphaVariation = 0.8 + 0.2 * Math.cos(i + t * 0.1)
-      ctx.globalAlpha = baseAlpha /* * alphaVariation */
+      ctx.globalAlpha = baseAlpha // Constant alpha, no variation
       ctx.fill()
       ctx.globalAlpha = 1
       ctx.restore()
     }
 
     function animate() {
-      if (!canvas || !isVisible) return
+      if (!canvas) return
 
       ctx!.clearRect(0, 0, canvas.width, canvas.height)
 
@@ -297,7 +288,7 @@ export function BackgroundEffect() {
       // Y-axis physics (stretching with momentum)
       stretchAmount.current += stretchVelocity.current
       stretchVelocity.current *= PHYSICS_CONFIG.Y_FRICTION // Stretch decay
-      stretchAmount.current *= 0.95 // Gradual return to neutral
+      stretchAmount.current *= 0.98 // More gradual return to neutral for gentleness
 
       // Update X-axis offset for horizontal movement
       waveXOffset.current += waveVelocity.current * 0.016 // Convert to frame-based movement
@@ -315,11 +306,10 @@ export function BackgroundEffect() {
       animationRef.current = requestAnimationFrame(animate)
     }
 
-    document.addEventListener('visibilitychange', handleVisibilityChange)
+    // Start animation immediately without visibility checks
     animate()
 
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
       window.removeEventListener('resize', resize)
       if (animationRef.current) cancelAnimationFrame(animationRef.current)
     }
