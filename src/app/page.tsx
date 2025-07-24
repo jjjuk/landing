@@ -3,6 +3,7 @@ import { GitHubLogoIcon, DiscordLogoIcon } from '@radix-ui/react-icons'
 import { Avatar, Button, ThemeToggle } from '../ui'
 import { BackgroundEffect } from '../ui/BackgroundEffect'
 import confetti from 'canvas-confetti'
+import { useState } from 'react'
 // import { Separator } from '@radix-ui/react-separator'
 
 const DS_CONFETTI_SCALING = 3
@@ -28,6 +29,8 @@ const handleDiscordClick = async () => {
 }
 
 export default function Home() {
+  const [discordJoining, setDiscordJoining] = useState(false)
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-between bg-transparent text-neutral-900 dark:text-neutral-100 font-sans px-4 py-10 relative overflow-hidden">
       <BackgroundEffect />
@@ -89,12 +92,28 @@ export default function Home() {
             <Button
               asChild
               variant="discord"
-              onClick={handleDiscordClick}
+              disabled={discordJoining}
+              onClick={() => {
+                !discordJoining &&
+                  handleDiscordClick().finally(() => {
+                    setDiscordJoining(false)
+                  })
+                setDiscordJoining(true)
+              }}
               className="z-20 cursor-pointer"
             >
               <a rel="noopener noreferrer" className="gap-2">
-                <DiscordLogoIcon className="w-5 h-5" />
-                Join SoyDev
+                {discordJoining ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Joining...
+                  </>
+                ) : (
+                  <>
+                    <DiscordLogoIcon className="w-5 h-5" />
+                    Join SoyDev
+                  </>
+                )}
               </a>
             </Button>
           </div>
